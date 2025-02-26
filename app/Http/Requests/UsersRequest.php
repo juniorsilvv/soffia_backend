@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\ResponseTrait;
 
-class RegisterRequest extends FormRequest
+class UsersRequest extends FormRequest
 {
 
     use ResponseTrait;

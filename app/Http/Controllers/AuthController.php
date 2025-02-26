@@ -6,9 +6,9 @@ use App\Models\User;
 use App\ResponseTrait;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UsersRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\RegisterRequest;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -47,7 +47,7 @@ class AuthController extends Controller
      * @return object
      * @author Junior <hjuniorbsilva@gmail.com>
      */
-    public function register(RegisterRequest $request): object
+    public function register(UsersRequest $request): object
     {
     
         try {
