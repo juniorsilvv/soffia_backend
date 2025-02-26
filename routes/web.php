@@ -16,8 +16,12 @@ Route::prefix('api')->group(function(){
 
 
     Route::middleware(AuthMiddleware::class)->group(function(){
-        Route::get('users', [UserController::class, 'users']);
         Route::get('logout', [AuthController::class, 'logout']);
+        
+        // USERS
+        Route::get('users', [UserController::class, 'users']);
+        Route::post('users/create', [UserController::class, 'create']);
+        
     });
 });
 
