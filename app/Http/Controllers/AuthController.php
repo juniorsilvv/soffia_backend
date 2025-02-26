@@ -28,9 +28,8 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         
-        if (!$token = Auth::attempt($credentials)) {
-            return $this->responseJSON(false, 'Credenciais Inválidas', 401);
-        }
+        if (!$token = Auth::attempt($credentials)) 
+            return $this->responseJSON(false, 'Credenciais inválidas. Verifique seu email e senha.', 401);
 
         $user = Auth::user();
         $token = JWTAuth::fromUser($user);
@@ -67,6 +66,24 @@ class AuthController extends Controller
             ]);            
         } catch (\Exception $e) {
             return $this->responseJSON(false, 'Erro ao cadastrar o usuário. Verifique os dados fornecidos.', 500);
+        }
+    }
+
+    /**
+     * Realiza logout do usuário
+     *
+     * @return object
+     * @author Junior <hjuniorbsilva@gmail.com>
+     */
+    public function logout(): object
+    {
+        try {
+            // Invalida o token do usuário atual
+            JWTAuth::invalidate(JWTAuth::getToken());
+
+            return $this->responseJSON(true, 'Logout realizado com sucesso.', 200);
+        } catch (\Exception $e) {
+            return $this->responseJSON(false, 'Falha ao tentar realizar logout.', 500);
         }
     }
 }
