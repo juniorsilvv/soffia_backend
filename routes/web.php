@@ -17,6 +17,7 @@ Route::prefix('api')->group(function(){
 
     Route::middleware(AuthMiddleware::class)->group(function(){
         Route::get('users', [UserController::class, 'users']);
+        Route::get('logout', [AuthController::class, 'logout']);
     });
 });
 
