@@ -27,7 +27,7 @@ class PostController extends Controller
      */
     public function posts()
     {
-        $posts = $this->postRepository->all(['*'], ['tags', 'author']);
+        $posts = $this->postRepository->paginate(10, ['*'], ['tags', 'author']);
         return new PostColletion($posts);
     }
 
