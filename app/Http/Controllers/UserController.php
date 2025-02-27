@@ -26,7 +26,7 @@ class UserController extends Controller
      */
     public function users()
     {
-        $users = $this->userRepository->all();
+        $users = $this->userRepository->paginate();
         return new UserCollection($users);
     }
 
