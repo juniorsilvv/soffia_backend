@@ -4,24 +4,30 @@ namespace App;
 
 trait ValidatePostsTrait
 {
-    public function titleValidation()
+    public function titleValidation($userId = null)
     {
         return [
-            'title' => ['required', 'string']
+            'title' => [
+                (is_null($userId) ? 'required' : 'nullable'), 
+                'string'
+            ]
         ];
     }
 
     public function autorValidation()
     {
         return [
-            'author' => ['nullable', 'integer', 'exists:users,id']
+            'author_id' => ['nullable', 'integer', 'exists:users,id']
         ];
     }
 
-    public function contentValidation()
+    public function contentValidation($userId = null)
     {
         return [
-           'content' => ['required', 'string']
+           'content' => [
+                (is_null($userId) ? 'required' : 'nullable'), 
+                'string'
+            ]
         ];
     }
 
