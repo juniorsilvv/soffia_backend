@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -20,11 +21,16 @@ Route::prefix('api')->group(function(){
         
         // USERS
 
-        Route::prefix('users')->group(function(){
-            Route::get('/', [UserController::class, 'users']);
-            Route::post('create', [UserController::class, 'create']);
-            route::put('update/{id}', [UserController::class, 'update']);
-            Route::delete('delete/{id}', [UserController::class, 'delete']);
+        Route::prefix('users')->controller(UserController::class)->group(function(){
+            Route::get('/', 'users');
+            Route::post('create', 'create');
+            route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+
+        Route::prefix('posts')->controller(PostController::class)->group(function(){
+            Route::get('/', 'posts');
         });
     });
 });
