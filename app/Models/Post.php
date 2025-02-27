@@ -9,7 +9,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'user_id'];
+    protected $fillable = ['title', 'content', 'author_id'];
 
     /**
      * Relacionamento com o usuário (belongsTo).
@@ -17,7 +17,7 @@ class Post extends Model
      */
     public function author()
     {
-        return $this->belongsTo(User::class, 'user_id')->select(['id', 'name', 'email', 'email', 'phone']);
+        return $this->belongsTo(User::class, 'author_id')->select(['id', 'name', 'email', 'email', 'phone']);
     }
 
     /**
