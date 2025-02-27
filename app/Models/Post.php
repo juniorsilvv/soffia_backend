@@ -26,7 +26,7 @@ class Post extends Model
      */
     public function tags()
     {
-        return $this->hasMany(PostsTags::class);
+        return $this->hasMany(PostsTags::class, 'post_id')->select(['tag_name', 'post_id']);
     }
 
 }
