@@ -6,7 +6,7 @@ use App\Models\User;
 use App\ResponseTrait;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\UsersRequest;
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -47,7 +47,7 @@ class AuthController extends Controller
      * @return object
      * @author Junior <hjuniorbsilva@gmail.com>
      */
-    public function register(UsersRequest $request): object
+    public function register(RegisterRequest $request): object
     {
     
         try {
@@ -55,7 +55,7 @@ class AuthController extends Controller
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'phone'    => $request->phone,
-                'password' => Hash::make($request->password), 
+                'password' => $request->password, 
             ]);
     
             $token = JWTAuth::fromUser($user);
