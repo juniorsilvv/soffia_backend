@@ -1,14 +1,12 @@
 <?php
+
 namespace App\Repositories;
 
 abstract class Repository implements RepositoryInterface
 {
     protected $model;
 
-    public function __construct()
-    {
-
-    }
+    public function __construct() {}
 
     /**
      * Recupera todos os registros de registros.
@@ -43,6 +41,26 @@ abstract class Repository implements RepositoryInterface
         }
 
         return $query->find($id);
+    }
+
+
+    /**
+     * Recupera registros paginados.
+     *
+     * @param int $perPage
+     * @param array $columns
+     * @param array $relations
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function paginate($perPage = 10, $columns = ['*'], $relations = [])
+    {
+        $query = $this->model::select($columns);
+
+        if (!empty($relations)) {
+            $query->with($relations); 
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**
