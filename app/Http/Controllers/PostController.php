@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreatePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\ResponseTrait;
+use Illuminate\Http\Request;
 use App\Repositories\PostRepository;
 use App\Http\Resources\PostColletion;
+use App\Http\Requests\CreatePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Repositories\PostsTagsRepository;
-use App\ResponseTrait;
 
 class PostController extends Controller
 {
@@ -25,8 +26,29 @@ class PostController extends Controller
      *
      * @author Junior <hjuniorbsilva@gmail.com>
      */
-    public function posts()
+    public function posts(Request $request)
     {
+        /**
+         * Caso exista a query tag, busca o registro de tag
+         */
+        if ($request->has('tag')) {
+            $tag = $request->query('tag');
+            
+            $posts = $this->postRepository->searchByTag($tag, ['tags', 'author']);
+
+            return new PostColletion($posts);
+        }
+
+        if ($request->has('query')) {
+            $query = $request->query('query');
+            
+            $posts = $this->postRepository->searchTerms($query, ['tags', 'author']);
+
+            return new PostColletion($posts);
+        }
+
+            
+           
         $posts = $this->postRepository->paginate(10, ['*'], ['tags', 'author']);
         return new PostColletion($posts);
     }
