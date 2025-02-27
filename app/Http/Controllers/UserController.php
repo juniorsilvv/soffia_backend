@@ -3,23 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Requests\CreateUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\ResponseTrait;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserCollection;
-use App\ResponseTrait;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Repositories\UserRepository;
 
 class UserController extends Controller
 {
 
     use ResponseTrait;
-    private $userRespository;
+    protected $userRepository;
 
-    public function __construct()
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userRespository = new UserRepository;
+        $this->userRepository = $userRepository;
     }
     /**
      * Retorna todos os usuários
@@ -27,7 +26,7 @@ class UserController extends Controller
      */
     public function users()
     {
-        $users = $this->userRespository->all();
+        $users = $this->userRepository->all();
         return new UserCollection($users);
     }
 
@@ -41,7 +40,7 @@ class UserController extends Controller
     public function create(CreateUserRequest $request)
     {
         try {
-            $user = $this->userRespository->create([
+            $user = $this->userRepository->create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'phone'    => $request->phone,
@@ -61,7 +60,7 @@ class UserController extends Controller
 
         try {
             // Encontrar o usuário pelo ID
-            $user = $this->userRespository->find($request->id);
+            $user = $this->userRepository->find($request->id);
 
             // Verificar se o usuário foi encontrado
             if (!$user) {
@@ -79,8 +78,9 @@ class UserController extends Controller
             }
 
             // Atualizar o usuário com os dados fornecidos
-            $this->userRespository->update($request->id, $updated);
+            $this->userRepository->update($request->id, $updated);
 
+            $user = $this->userRepository->find($request->id);
             // Retornar a resposta com o usuário atualizado
             return $this->responseJSON(true, 'Usuário atualizado com sucesso', 200, [
                 'user' => $user, // Retorna o usuário atualizado
@@ -88,6 +88,31 @@ class UserController extends Controller
         } catch (\Exception $e) {
             print_r($e->getMessage());exit;
             return $this->responseJSON(false, 'Erro ao editar o usuário. Verifique os dados fornecidos.', 500);
+        }
+    }
+
+    /**
+     * Remove usuário por ID
+     *
+     * @param [type] $id
+     * @return object
+     * @author Junior <hjuniorbsilva@gmail.com>
+     */
+    public function delete($id) : object
+    {
+        try {
+            $user = $this->userRepository->find($id);
+
+            if (!$user) {
+                return $this->responseJSON(false, 'Usuário não encontrado', 404);
+            }
+
+            // Deletar o usuário
+            $this->userRepository->delete($id);
+
+            return $this->responseJSON(true, 'Usuário deletado com sucesso', 200);
+        } catch (\Exception $e) {
+            return $this->responseJSON(false, 'Erro ao deletar o usuário.', 500);
         }
     }
 }
