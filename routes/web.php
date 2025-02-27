@@ -32,6 +32,7 @@ Route::prefix('api')->group(function(){
         Route::prefix('posts')->controller(PostController::class)->group(function(){
             Route::get('/', 'posts');
             Route::post('create', 'create');
+            Route::put('update/{id}', 'update');
             Route::delete('delete/{id}', 'delete');
         });
     });
