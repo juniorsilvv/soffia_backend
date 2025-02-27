@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-interface PostsRepositoryInterface
+interface RepositoryInterface
 {
     public function all($columns = ['*']);
     public function find($id, $columns = ['*']);
