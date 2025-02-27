@@ -12,20 +12,6 @@ class CreatePostRequest extends FormRequest
     use ResponseTrait;
     use ValidatePostsTrait;
 
-    public function prepareForValidation()
-    {
-
-        /**
-         * Se o autor não for informado, pega o usuário atual como autor
-         */
-        if (!$this->has('author')) { 
-            $this->merge([
-                'author' => Auth::user()->id
-            ]);
-        }
-    }
-
-
     /**
      * Determine if the user is authorized to make this request.
      */
