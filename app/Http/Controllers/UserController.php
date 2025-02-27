@@ -9,18 +9,25 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserCollection;
 use App\ResponseTrait;
+use App\Repositories\UserRepository;
 
 class UserController extends Controller
 {
 
     use ResponseTrait;
+    private $userRespository;
+
+    public function __construct()
+    {
+        $this->userRespository = new UserRepository;
+    }
     /**
      * Retorna todos os usuários
      * @author Junior <hjuniorbsilva@gmail.com>
      */
     public function users()
     {
-        $users = User::all();
+        $users = $this->userRespository->all();
         return new UserCollection($users);
     }
 
@@ -34,7 +41,7 @@ class UserController extends Controller
     public function create(CreateUserRequest $request)
     {
         try {
-            $user = User::create([
+            $user = $this->userRespository->create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'phone'    => $request->phone,
@@ -54,7 +61,7 @@ class UserController extends Controller
 
         try {
             // Encontrar o usuário pelo ID
-            $user = User::find($request->id);
+            $user = $this->userRespository->find($request->id);
 
             // Verificar se o usuário foi encontrado
             if (!$user) {
@@ -72,7 +79,7 @@ class UserController extends Controller
             }
 
             // Atualizar o usuário com os dados fornecidos
-            $user->update($updated);
+            $this->userRespository->update($request->id, $updated);
 
             // Retornar a resposta com o usuário atualizado
             return $this->responseJSON(true, 'Usuário atualizado com sucesso', 200, [

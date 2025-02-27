@@ -7,6 +7,7 @@ use App\ResponseTrait;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -50,8 +51,9 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): object
     {
     
+        $userRepository = new UserRepository;
         try {
-            $user = User::create([
+            $user = $userRepository->create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'phone'    => $request->phone,
