@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Repositories\PostRepository;
 use App\Http\Resources\PostColletion;
 use App\Repositories\PostsTagsRepository;
@@ -34,9 +35,9 @@ class PostController extends Controller
     {
         try {
             $post = $this->postRepository->create([
-                'title'     => $request->title,
-                'content'   => $request->content,
-                'user_id'   => $request->author
+                'title'         => $request->title,
+                'content'       => $request->content,
+                'author_id'     => $request->author_id
             ]);
 
             /**
@@ -55,6 +56,54 @@ class PostController extends Controller
             ]);
         } catch (\Exception $e) {
             return $this->responseJSON(false, 'Erro ao cadastrar o Post. Verifique os dados fornecidos.', 500);
+        }
+    }
+
+    public function update($id, UpdatePostRequest $request)
+    {
+        try {
+            // Encontrar o usuário pelo ID
+            $post = $this->postRepository->find($request->id);
+
+            // Verificar se o usuário foi encontrado
+            if (!$post) {
+                return $this->responseJSON(false, 'Post não encontrado', 404);
+            }
+
+
+            /**
+             * Montando itens que serão atualizados
+             */
+            $updated = [];
+            foreach($request->all() as $key => $value){
+                if($value === "" || $value === null) continue;
+                $updated[$key] = $value;
+            }
+
+            // Atualizar o post com os dados fornecidos
+            $this->postRepository->update($id, $updated);
+
+            /**
+             * Adicionando tags no post
+             */
+            if ($request->has('tags')) {
+                $this->tagsRepository->delete($post->id, 'post_id'); 
+                $tags = $request->tags;
+                foreach ($tags as $tag) {
+                    $this->tagsRepository->create(['tag_name' => $tag, 'post_id' => $post->id]); 
+                }
+            }
+
+            $post = $this->postRepository->find($request->id);
+            // Retornar a resposta com o post atualizado
+
+            $post = $this->postRepository->find($post->id, ['*'], ['tags', 'author']);
+            return $this->responseJSON(true, 'Post atualizado com sucesso', 200, [
+                'post' => $post, // Retorna o post atualizado
+            ]);
+        } catch (\Exception $e) {
+            print_r($e->getMessage());exit;
+            return $this->responseJSON(false, 'Erro ao editar o post. Verifique os dados fornecidos.', 500);
         }
     }
 
