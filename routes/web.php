@@ -19,9 +19,12 @@ Route::prefix('api')->group(function(){
         Route::get('logout', [AuthController::class, 'logout']);
         
         // USERS
-        Route::get('users', [UserController::class, 'users']);
-        Route::post('users/create', [UserController::class, 'create']);
-        
+
+        Route::prefix('users')->group(function(){
+            Route::get('/', [UserController::class, 'users']);
+            Route::post('create', [UserController::class, 'create']);
+            route::put('update/{id}', [UserController::class, 'update']);
+        });
     });
 });
 
