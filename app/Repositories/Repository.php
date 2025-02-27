@@ -11,7 +11,7 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Recupera todos os registros de usuários.
+     * Recupera todos os registros de registros.
      *
      * @param array $columns
      * @return mixed
@@ -28,7 +28,7 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Recupera um usuário por ID.
+     * Recupera um registro por ID.
      *
      * @param int $id
      * @param array $columns
@@ -46,7 +46,7 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Cria um novo usuário.
+     * Cria um novo registro.
      *
      * @param array $data
      * @return mixed
@@ -57,7 +57,7 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Atualiza um usuário existente.
+     * Atualiza um registro existente.
      *
      * @param int $id
      * @param array $data
@@ -65,25 +65,26 @@ abstract class Repository implements RepositoryInterface
      */
     public function update($id, array $data)
     {
-        $user = $this->model::find($id);
-        if ($user) {
-            $user->update($data);
-            return $user;
+        $query = $this->model::find($id);
+        if ($query) {
+            $query->update($data);
+            return $query;
         }
         return null;
     }
 
     /**
-     * Deleta um usuário.
+     * Deleta um registro.
      *
-     * @param int $id
+     * @param int $value
+     * @param  $column
      * @return bool
      */
-    public function delete($id)
+    public function delete($value, $column = 'id')
     {
-        $user = $this->model::find($id);
-        if ($user) {
-            return $user->delete();
+        $query = $this->model::where($column, $value);
+        if ($query) {
+            return $query->delete();
         }
         return false;
     }
