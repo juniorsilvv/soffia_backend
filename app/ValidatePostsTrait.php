@@ -2,8 +2,23 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Auth;
+
 trait ValidatePostsTrait
 {
+
+    public function prepareForValidation()
+    {
+        /**
+         * Se o autor não for informado, pega o usuário atual como autor
+         */
+        if (!$this->has('author_id')) { 
+            $this->merge([
+                'author_id' => Auth::user()->id
+            ]);
+        }
+    }
+
     public function titleValidation($userId = null)
     {
         return [
