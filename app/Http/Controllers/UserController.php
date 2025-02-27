@@ -55,7 +55,14 @@ class UserController extends Controller
         }
     }
 
-    public function update(UpdateUserRequest $request)
+    /**
+     * Atuaizando usuário
+     *
+     * @param UpdateUserRequest $request
+     * @return object
+     * @author Junior <hjuniorbsilva@gmail.com>
+     */
+    public function update(UpdateUserRequest $request) : object
     {
 
         try {

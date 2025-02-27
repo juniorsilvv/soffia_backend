@@ -59,7 +59,15 @@ class PostController extends Controller
         }
     }
 
-    public function update($id, UpdatePostRequest $request)
+    /**
+     * Atualiza o post
+     *
+     * @param [type] $id
+     * @param UpdatePostRequest $request
+     * @return object
+     * @author Junior <hjuniorbsilva@gmail.com>
+     */
+    public function update($id, UpdatePostRequest $request) :object
     {
         try {
             // Encontrar o usuário pelo ID
