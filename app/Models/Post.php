@@ -17,7 +17,7 @@ class Post extends Model
      */
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id')->select(['id', 'name', 'email', 'email', 'phone']);
+        return $this->belongsTo(User::class, 'author_id', 'id')->select(['id', 'name', 'email', 'phone']);
     }
 
     /**
