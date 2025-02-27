@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePostRequest;
 use App\Repositories\PostRepository;
 use App\Http\Resources\PostColletion;
+use App\Repositories\PostsTagsRepository;
 use App\ResponseTrait;
 
 class PostController extends Controller
 {
     use ResponseTrait;
     protected $postRepository;
-    public function __construct(PostRepository $postRepository)
+    protected $tagsRepository;
+    public function __construct(PostRepository $postRepository, PostsTagsRepository $tagsRepository)
     {
         $this->postRepository = $postRepository;
+        $this->tagsRepository = $tagsRepository;
     }
 
     /**
@@ -36,6 +39,17 @@ class PostController extends Controller
                 'user_id'   => $request->author
             ]);
 
+            /**
+             * Adicionando tags no post
+             */
+            if ($request->has('tags')) {
+                $tags = $request->tags;
+                foreach ($tags as $tag) {
+                    $this->tagsRepository->create(['tag_name' => $tag, 'post_id' => $post->id]); 
+                }
+            }
+            $post = $this->postRepository->find($post->id, ['*'], ['tags', 'author']);
+
             return $this->responseJSON(true, 'Post cadastrado com sucesso', 201, [
                 'post'  => $post,
             ]);
@@ -52,7 +66,7 @@ class PostController extends Controller
      * @return object
      * @author Junior <hjuniorbsilva@gmail.com>
      */
-    public function delete($id) : object
+    public function delete($id): object
     {
         try {
             $user = $this->postRepository->find($id);
