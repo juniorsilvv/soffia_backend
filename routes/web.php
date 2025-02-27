@@ -24,6 +24,7 @@ Route::prefix('api')->group(function(){
             Route::get('/', [UserController::class, 'users']);
             Route::post('create', [UserController::class, 'create']);
             route::put('update/{id}', [UserController::class, 'update']);
+            Route::delete('delete/{id}', [UserController::class, 'delete']);
         });
     });
 });
