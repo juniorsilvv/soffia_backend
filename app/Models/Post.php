@@ -15,18 +15,18 @@ class Post extends Model
      * Relacionamento com o usuário (belongsTo).
      * Cada post pertence a um usuário.
      */
-    public function user()
+    public function author()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id')->select(['id', 'name', 'email', 'email', 'phone']);
     }
 
     /**
-     * Relacionamento com as tags (belongsToMany).
+     * Relacionamento com as tags (hasMany).
      * Cada post pode ter muitas tags.
      */
     public function tags()
     {
-        return $this->belongsToMany(PostsTags::class, 'posts_tags');
+        return $this->hasMany(PostsTags::class);
     }
 
 }
