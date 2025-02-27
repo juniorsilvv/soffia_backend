@@ -3,10 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -49,9 +50,15 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function setPasswordAttribute($value)
+    {
+        if(!empty($value))
+            $this->attributes['password'] = Hash::make($value);
+    }
+
     public function getJWTIdentifier()
     {
-        return $this->getKey(); // Retorna o identificador único do usuário (normalmente o ID)
+        return $this->getKey();
     }
 
     public function getJWTCustomClaims()
