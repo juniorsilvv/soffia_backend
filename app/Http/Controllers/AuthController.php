@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -14,19 +13,40 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-
     use ResponseTrait;
 
     /**
-     * Realiza login do usuário no sistema
-     *
-     * @param LoginRequest $request
-     * @return object
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     summary="Realiza login do usuário",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login realizado com sucesso.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="your-jwt-token"),
+     *             @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Credenciais inválidas.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Credenciais inválidas. Verifique seu email e senha.")
+     *         )
+     *     )
+     * )
      */
     public function login(LoginRequest $request): object
     {
-
         $credentials = $request->only('email', 'password');
         
         if (!$token = Auth::attempt($credentials)) 
@@ -35,22 +55,45 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = JWTAuth::fromUser($user);
         return $this->responseJSON(true, 'Login realizado com sucesso.', 200, [
-            'token'         => $token,
-            'user'          => $user,
+            'token' => $token,
+            'user'  => $user,
         ]);
     }
 
-
     /**
-     * Cadastra um novo usuário
-     *
-     * @param RegisterRequest $request
-     * @return object
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     summary="Cadastra um novo usuário",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "phone", "password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="phone", type="string", example="123456789"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuário cadastrado com sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="your-jwt-token"),
+     *             @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro ao cadastrar o usuário",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Erro ao cadastrar o usuário. Verifique os dados fornecidos.")
+     *         )
+     *     )
+     * )
      */
     public function register(RegisterRequest $request): object
     {
-    
         $userRepository = new UserRepository;
         try {
             $user = $userRepository->create([
@@ -59,9 +102,9 @@ class AuthController extends Controller
                 'phone'    => $request->phone,
                 'password' => $request->password, 
             ]);
-    
+
             $token = JWTAuth::fromUser($user);
-    
+
             return $this->responseJSON(true, 'Usuário cadastrado com sucesso', 201, [
                 'token' => $token,
                 'user'  => $user,
@@ -72,10 +115,25 @@ class AuthController extends Controller
     }
 
     /**
-     * Realiza logout do usuário
-     *
-     * @return object
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Get(
+     *     path="/api/auth/logout",
+     *     summary="Realiza logout do usuário",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout realizado com sucesso.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logout realizado com sucesso.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Falha ao tentar realizar logout.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Falha ao tentar realizar logout.")
+     *         )
+     *     )
+     * )
      */
     public function logout(): object
     {

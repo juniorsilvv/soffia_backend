@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+ */
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -10,9 +13,14 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Repositories\UserRepository;
 
+/**
+ * @OA\Tag(
+ *     name="Users",
+ *     description="Endpoints relacionados a usuários"
+ * )
+ */
 class UserController extends Controller
 {
-
     use ResponseTrait;
     protected $userRepository;
 
@@ -20,9 +28,28 @@ class UserController extends Controller
     {
         $this->userRepository = $userRepository;
     }
+
     /**
-     * Retorna todos os usuários
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Get(
+     *     path="/api/users",
+     *     summary="Retorna todos os usuários",
+     *     tags={"Users"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de usuários",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro ao recuperar usuários",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Erro ao recuperar usuários.")
+     *         )
+     *     )
+     * )
      */
     public function users()
     {
@@ -31,11 +58,33 @@ class UserController extends Controller
     }
 
     /**
-     * Cadastra um novo usuário
-     *
-     * @param UsersRequest $request
-     * @return void
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Post(
+     *     path="/api/users/create",
+     *     summary="Cadastra um novo usuário",
+     *     tags={"Users"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "phone", "password"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="password", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuário cadastrado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro ao cadastrar usuário",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Erro ao cadastrar o usuário.")
+     *         )
+     *     )
+     * )
      */
     public function create(CreateUserRequest $request)
     {
@@ -56,54 +105,90 @@ class UserController extends Controller
     }
 
     /**
-     * Atuaizando usuário
-     *
-     * @param UpdateUserRequest $request
-     * @return object
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Put(
+     *     path="/api/users/update/{id}",
+     *     summary="Atualiza os dados de um usuário",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID do usuário a ser atualizado",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="password", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuário atualizado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuário não encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuário não encontrado")
+     *         )
+     *     )
+     * )
      */
     public function update(UpdateUserRequest $request) : object
     {
-
         try {
-            // Encontrar o usuário pelo ID
             $user = $this->userRepository->find($request->id);
 
-            // Verificar se o usuário foi encontrado
             if (!$user) {
                 return $this->responseJSON(false, 'Usuário não encontrado', 404);
             }
 
-
-            /**
-             * Montando itens que serão atualizados
-             */
             $updated = [];
             foreach($request->all() as $key => $value){
                 if($value === "" || $value === null) continue;
                 $updated[$key] = $value;
             }
 
-            // Atualizar o usuário com os dados fornecidos
             $this->userRepository->update($request->id, $updated);
 
             $user = $this->userRepository->find($request->id);
-            // Retornar a resposta com o usuário atualizado
             return $this->responseJSON(true, 'Usuário atualizado com sucesso', 200, [
-                'user' => $user, // Retorna o usuário atualizado
+                'user' => $user, 
             ]);
         } catch (\Exception $e) {
-            print_r($e->getMessage());exit;
             return $this->responseJSON(false, 'Erro ao editar o usuário. Verifique os dados fornecidos.', 500);
         }
     }
 
     /**
-     * Remove usuário por ID
-     *
-     * @param [type] $id
-     * @return object
-     * @author Junior <hjuniorbsilva@gmail.com>
+     * @OA\Delete(
+     *     path="/api/users/delete/{id}",
+     *     summary="Deleta um usuário",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID do usuário a ser deletado",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuário deletado com sucesso"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuário não encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuário não encontrado")
+     *         )
+     *     )
+     * )
      */
     public function delete($id) : object
     {
@@ -114,9 +199,7 @@ class UserController extends Controller
                 return $this->responseJSON(false, 'Usuário não encontrado', 404);
             }
 
-            // Deletar o usuário
             $this->userRepository->delete($id);
-
             return $this->responseJSON(true, 'Usuário deletado com sucesso', 200);
         } catch (\Exception $e) {
             return $this->responseJSON(false, 'Erro ao deletar o usuário.', 500);
